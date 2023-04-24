@@ -14,6 +14,27 @@ const users = [
 
 const secretKey = 'my_secret_key'; // A secret key to use for JWT signing and verification
 
+// Middleware for verifying JWT tokens
+const jwtMiddleware = async (ctx, next) => {
+  const authHeader = ctx.request.headers.authorization;
+  if (!authHeader) {
+    ctx.status = 401;
+    ctx.body = { error: 'No token provided' };
+    return;
+  }
+
+  const token = authHeader.replace('Bearer ', '');
+  try {
+    const decoded = jwt.verify(token, secretKey);
+    ctx.state.user = decoded.username;
+    await next();
+  } catch (err) {
+    ctx.status = 401;
+    ctx.body = { error: 'Invalid token' };
+  }
+};
+
+
 // Define a route for the login endpoint
 router.post('/login', async (ctx) => {
   const { username, password } = ctx.request.body;
@@ -29,6 +50,12 @@ router.post('/login', async (ctx) => {
   // If the user is valid, create a JWT token and send it back
   const token = jwt.sign({ username }, secretKey, { expiresIn: '1h' });
   ctx.body = { token };
+});
+
+// Define a route for a protected endpoint that requires a valid JWT token
+router.get('/protected', jwtMiddleware, async (ctx) => {
+  const user = ctx.state.user;
+  ctx.body = { message: `Hello, ${user}!` };
 });
 
 app.use(bodyParser()); // Use the body parser middleware to parse HTTP request bodies
