@@ -1,0 +1,16 @@
+{
+  "name": "fake-backend-login",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Azer Sadykhzadeh",
+  "dependencies": {
+    "jsonwebtoken": "^9.0.0",
+    "koa": "^2.14.2",
+    "koa-bodyparser": "^4.4.0",
+    "koa-router": "^12.0.0"
+  }
+}
