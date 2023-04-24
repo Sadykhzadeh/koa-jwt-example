@@ -34,6 +34,8 @@ const jwtMiddleware = async (ctx, next) => {
   }
 };
 
+// Define a route for the root endpoint
+router.get('/', (ctx) => { ctx.body = 'Hello World' })
 
 // Define a route for the login endpoint
 router.post('/login', async (ctx) => {
