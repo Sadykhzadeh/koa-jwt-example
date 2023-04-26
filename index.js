@@ -2,9 +2,13 @@ const Koa = require('koa'); // Import the Koa web framework
 const Router = require('koa-router'); // Import the Koa router
 const bodyParser = require('koa-bodyparser'); // Import middleware for parsing HTTP request body
 const jwt = require('jsonwebtoken'); // Import the JWT library
+const cors = require('@koa/cors');
 
 const app = new Koa(); // Create a new Koa app instance
 const router = new Router(); // Create a new router instance
+
+// cors
+app.use(cors({origin: 'http://localhost:3000'}));
 
 // In a real-world app, this would be a database of users
 const users = [
@@ -63,6 +67,6 @@ router.get('/protected', jwtMiddleware, async (ctx) => {
 app.use(bodyParser()); // Use the body parser middleware to parse HTTP request bodies
 app.use(router.routes()); // Use the router to handle incoming requests
 
-app.listen(3000, () => { // Start the server on port 3000
-  console.log('Server running on port 3000');
+app.listen(4000, () => { // Start the server on port 4000
+  console.log('Server running on port 4000');
 });
