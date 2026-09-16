@@ -16,7 +16,11 @@ const users = [
   { username: 'huseyn', password: 'password2' }
 ];
 
-const secretKey = 'my_secret_key'; // A secret key to use for JWT signing and verification
+// The key to sign and verify with. Read from the environment, because a key
+// written here is a key in everybody's copy of this file — and this file gets
+// copied. The fallback is what keeps the sample runnable, and it is named so
+// that nobody mistakes it for a value to keep.
+const secretKey = process.env.JWT_SECRET || 'insecure-development-key';
 
 // Middleware for verifying JWT tokens
 const jwtMiddleware = async (ctx, next) => {
@@ -29,7 +33,10 @@ const jwtMiddleware = async (ctx, next) => {
 
   const token = authHeader.replace('Bearer ', '');
   try {
-    const decoded = jwt.verify(token, secretKey);
+    // The algorithm is named rather than inferred: a verifier that accepts
+    // whatever the token's own header asks for is the classic way a JWT check
+    // gets talked out of checking anything.
+    const decoded = jwt.verify(token, secretKey, { algorithms: ['HS256'] });
     ctx.state.user = decoded.username;
     await next();
   } catch (err) {
@@ -54,7 +61,7 @@ router.post('/login', async (ctx) => {
   }
 
   // If the user is valid, create a JWT token and send it back
-  const token = jwt.sign({ username }, secretKey, { expiresIn: '1h' });
+  const token = jwt.sign({ username }, secretKey, { algorithm: 'HS256', expiresIn: '1h' });
   ctx.body = { token };
 });
 
