@@ -1,0 +1,25 @@
+name: ci
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: docker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: the server must refuse to start in production with no secret
+        run: |
+          if NODE_ENV=production node index.js; then
+            echo "expected it to refuse"
+            exit 1
+          fi
+          echo "refused as expected"
